@@ -16,4 +16,4 @@ pip3 install --no-input cython wheel numpy==1.23.0
 
 
 
-echo "Now run \npyenv activate py31016"
+printf "=============================================================\nNow run :- \npyenv activate py31016\n\n"
