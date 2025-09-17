@@ -21,5 +21,5 @@ RUN useradd -ms /bin/bash vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc
 USER vscode 
 
 
-
+ENV SOC=am62a
 ENV SHELL=/bin/bash
