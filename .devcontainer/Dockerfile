@@ -9,8 +9,17 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get auto-remove -y
 
-RUN apt-get install -y --no-install-recommends git ca-certificates build-essential pkg-config \
-libreadline-dev gcc-arm-none-eabi libnewlib-dev qtbase5-dev \
-libbz2-dev liblz4-dev libbluetooth-dev libpython3-dev libssl-dev libgd-dev 
+RUN apt-get install -y --no-install-recommends git ca-certificates build-essential nano pkg-config curl sudo locales make  libssl-dev zlib1g-dev \
+libbz2-dev libreadline-dev libsqlite3-dev  libncursesw5-dev \
+xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
+
+RUN locale-gen en_US.UTF-8
+ENV LANG=en_US.UTF-8
+ENV LC_ALL=en_US.UTF-8
+
+RUN useradd -ms /bin/bash vscode && echo "vscode ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
+USER vscode 
+
+
 
 ENV SHELL=/bin/bash
