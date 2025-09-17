@@ -9,7 +9,7 @@ ENV DEBIAN_FRONTEND=noninteractive
 RUN apt-get update && apt-get -y upgrade
 RUN apt-get auto-remove -y
 
-RUN apt-get install -y --no-install-recommends git ca-certificates build-essential nano pkg-config curl sudo locales make  libssl-dev zlib1g-dev \
+RUN apt-get install -y --no-install-recommends git ca-certificates build-essential nano htop pkg-config curl sudo locales make  libssl-dev zlib1g-dev \
 libbz2-dev libreadline-dev libsqlite3-dev  libncursesw5-dev \
 xz-utils tk-dev libxml2-dev libxmlsec1-dev libffi-dev liblzma-dev
 
