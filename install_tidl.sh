@@ -8,7 +8,18 @@ sudo chmod 777 /opt/ti
 cd /opt/ti
 git clone https://github.com/TexasInstruments/edgeai-tidl-tools.git
 export SOC=am62a
-cd edgeai-tidl-tools
+
+
+mkdir -p /opt/ti/edgeai-tidl-tools/tools/AM62A/
+cd /opt/ti/edgeai-tidl-tools/tools/AM62A/
+cp /workspaces/TI_EdgeAI/tidl_tools.tar.gz .
+tar xzvf tidl_tools.tar.gz
+tar xzvf tidl_tools.tar.gz  --strip-components=1
+
+sed -i 's!wget --quiet   https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/TIDL_TOOLS/${SOC^^}/tidl_tools.tar.gz!printf "=================================\nRemoved wget tidl_tools for AM62A \n================================\n!g'  /opt/ti/edgeai-tidl-tools/setup.sh
+
+
+cd /opt/ti/edgeai-tidl-tools
 source ./setup.sh
 
 
