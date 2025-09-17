@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -x
+set -xe
 sudo mkdir -p /opt/ti
 sudo chmod 777 /opt/ti
 cd /opt/ti
