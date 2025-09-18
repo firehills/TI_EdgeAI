@@ -2,6 +2,9 @@
 
 set -xe
 
+
+cd /opt/ti
+git clone --depth 1 https://github.com/TexasInstruments/edgeai-tensorlab.git
 cd /opt/ti/edgeai-tensorlab/edgeai-modelmaker
 
 

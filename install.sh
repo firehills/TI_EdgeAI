@@ -3,13 +3,9 @@
 set -xe
 sudo mkdir -p /opt/ti
 sudo chmod 777 /opt/ti
-cd /opt/ti
 
 
-git clone --depth 1 https://github.com/TexasInstruments/edgeai-tensorlab.git
 
-
-cd /opt/ti/edgeai-tensorlab/edgeai-modelmaker
 #curl -L https://github.com/pyenv/pyenv-installer/raw/master/bin/pyenv-installer | bash
 
 #echo '# pyenv settings ' >> ${HOME}/.bashrc
