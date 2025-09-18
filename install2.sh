@@ -1,6 +1,6 @@
 #!/bin/bash
 
-set -xe
+set -e
 
 export PYENV_ROOT="$HOME/.pyenv"
 [[ -d $PYENV_ROOT/bin ]] && export PATH="$PYENV_ROOT/bin:$PATH"
