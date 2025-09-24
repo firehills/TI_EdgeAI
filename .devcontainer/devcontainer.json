@@ -8,11 +8,12 @@
 
 	// Features to add to the dev container. More info: https://containers.dev/features.
     "features": {
-    //    "ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
+    	"ghcr.io/devcontainers/features/docker-outside-of-docker:1": {}
     },
 	
 
 	"mounts": [	
+		"source=TIEdgeAICode,target=/opt/ti,type=volume"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.
@@ -20,15 +21,22 @@
 
 	// Use 'postCreateCommand' to run commands after the container is created.
 	// "postCreateCommand": "pip3 install --user -r requirements.txt",
-	//"postCreateCommand": "bash scripts/post-create.sh"
+	"postCreateCommand": "/workspaces/TI_EdgeAI/scripts/post-create.sh",
 
 	// Configure tool-specific properties.
-	"customizations": {},
+	"customizations": {
+		"vscode": {
+			"extensions": [
+				"ms-python.debugpy",
+				"ms-python.python"
+			]
+		}
+	},
 
 	// privileged is required here to map the USB (usbipd_win) through to docker
     "runArgs": [
 		"--privileged",
-		"--shm-size=2gb"
+		"--shm-size=4gb"
 	]
 
 	// Uncomment to connect as root instead. More info: https://aka.ms/dev-containers-non-root.
