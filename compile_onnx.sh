@@ -20,8 +20,8 @@ cd /workspaces/TI_EdgeAI
 
 # These usually setup by TI tooling
 SOC=am62a
-TIDL_TOOLS_PATH=/opt/ti/edgeai-tidl-tools/tools/AM62A
-LD_LIBRARY_PATH=:/opt/ti/edgeai-tidl-tools/tools/AM62A:/opt/ti/edgeai-tidl-tools/tools/osrt_deps:/opt/ti/edgeai-tidl-tools/tools/osrt_deps/opencv_4.2.0_x86_u22/opencv/
+TIDL_TOOLS_PATH=/opt/ti/edgeai-tidl-tools/tools/AM62A/tidl_tools
+LD_LIBRARY_PATH=:/opt/ti/edgeai-tidl-tools/tools/AM62A/tidl_tools:/opt/ti/edgeai-tidl-tools/tools/osrt_deps:/opt/ti/edgeai-tidl-tools/tools/osrt_deps/opencv_4.2.0_x86_u22/opencv/
 CGT7X_ROOT=/opt/ti/edgeai-tidl-tools/tools/ti-cgt-c7000_5.0.0.LTS
 ARM64_GCC_PATH=/opt/ti/edgeai-tidl-tools/tools/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-linux-gnu
 
@@ -79,7 +79,7 @@ $TIDL_TOOLS_PATH/tidl_model_import.out $OUT_DIR/config --modelType 2 \
 --debugTraceLevel 0
 
 echo -n "\n================= RUN COMPILED MODEL LOCALLY ========================\n"
-sleep 2
+
 
 # Run inferance step 
 $TIDL_TOOLS_PATH/PC_dsp_test_dl_algo.out s:$OUT_DIR/config \

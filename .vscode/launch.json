@@ -1,0 +1,24 @@
+{
+    // Use IntelliSense to learn about possible attributes.
+    // Hover to view descriptions of existing attributes.
+    // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "DBG: CompileOnnx",
+            "type": "debugpy",
+            "request": "launch",
+            "program": "/workspaces/TI_EdgeAI/compile_onnx.py",
+            "python": "/home/vscode/.pyenv/versions/py3.10.12/bin/python3",
+            "console": "integratedTerminal",
+            "env": {
+                "SOC": "am62a",
+                "TIDL_TOOLS_PATH": "/opt/ti/edgeai-tidl-tools/tools/AM62A/tidl_tools",
+                "LD_LIBRARY_PATH": "/opt/ti/edgeai-tidl-tools/tools/AM62A/tidl_tools:/opt/ti/edgeai-tidl-tools/tools/osrt_deps:/opt/ti/edgeai-tidl-tools/tools/osrt_deps/opencv_4.2.0_x86_u22/opencv/
+CGT7X_ROOT=/opt/ti/edgeai-tidl-tools/tools/ti-cgt-c7000_5.0.0.LTS",
+                "ARM64_GCC_PATH": "/opt/ti/edgeai-tidl-tools/tools/arm-gnu-toolchain-13.2.Rel1-x86_64-aarch64-none-linux-gnu"
+            }
+            //"args": "${command:pickArgs}"
+        }
+    ]
+}
