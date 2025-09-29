@@ -58,20 +58,22 @@ cp resnet18_opset9.onnx $OUT_DIR
 echo "perfSimConfig = $TIDL_TOOLS_PATH/device_config.cfg" >> $OUT_DIR/config
 
 # Calibration/test - setup image.
-#see https://gist.github.com/yrevar/942d3a0ac09ec9e5eb3a to referance the category number to description, eg -> 895: 'warplane, military plane', 933 cheeseburger, 281 tabbycat
-echo "$OUT_DIR/jet.jpeg 895" >> $OUT_DIR/in_data_list.txt
+#see https://gist.github.com/yrevar/942d3a0ac09ec9e5eb3a to reference the category number to label, eg -> 895: 'warplane, military plane', 933 cheeseburger, 281 tabbycat
+echo "$OUT_DIR/jet.bmp 895" >> $OUT_DIR/in_data_calib.txt
 
-#echo "$OUT_DIR/resnet18/cheeseburger.jpg 933" > $OUT_DIR/resnet18/in_data_list2.txt
-#echo "$OUT_DIR/cat.jpeg 281 282"         > $OUT_DIR/in_data_list2.txt
-#echo "$OUT_DIR/cheeseburger.jpg 933" >> $OUT_DIR/in_data_list2.txt
-#Note -> --modelType 2 == onnx
+# and inference check again the original
+echo "$OUT_DIR/jet.jpeg 895" >> $OUT_DIR/in_data_inference.txt
 
-# Run compilation step 
+#Or somehting different
+#echo "$OUT_DIR/cheeseburger.jpg 933" >> $OUT_DIR/in_data_inference.txt
+
+
+# Run compilation step, note modeltype=2 is onnx
 $TIDL_TOOLS_PATH/tidl_model_import.out $OUT_DIR/config --modelType 2 \
 --inputNetFile $ONNX_MODEL --outputNetFile $OUT_DIR/tidl_net.bin \
 --outputParamsFile $OUT_DIR/tidl_io_buff  --inDataNorm 1 \
 --inMean 123.675 116.28 103.53  --inScale 0.017125 0.017507 0.017429 \
---inData $OUT_DIR/in_data_list.txt --inFileFormat 2 \
+--inData $OUT_DIR/in_data_calib.txt --inFileFormat 2 \
 --tidlStatsTool $TIDL_TOOLS_PATH/PC_dsp_test_dl_algo.out \
 --perfSimTool $TIDL_TOOLS_PATH/ti_cnnperfsim.out \
 --graphVizTool $TIDL_TOOLS_PATH/tidl_graphVisualiser.out \
@@ -85,7 +87,7 @@ echo -n "\n================= RUN COMPILED MODEL LOCALLY ========================
 $TIDL_TOOLS_PATH/PC_dsp_test_dl_algo.out s:$OUT_DIR/config \
 --netBinFile $OUT_DIR/tidl_net.bin \
 --ioConfigFile $OUT_DIR/tidl_io_buff1.bin \
---inData $OUT_DIR/in_data_list.txt --inFileFormat 2 \
+--inData $OUT_DIR/in_data_inference.txt --inFileFormat 2 \
 --outData $OUT_DIR/jet_tidl_out.bin --postProcType 1 --debug 0
 
 

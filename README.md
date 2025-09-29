@@ -24,6 +24,7 @@ pyenv activate py31018
 
 see https://github.com/TexasInstruments/edgeai-tidl-tools.git
 
+
 Run the common setup above, then 
 ```bash
 cd /workspaces/TI_EdgeAI
@@ -54,3 +55,31 @@ cd /workspaces/TI_EdgeAI
 # run the examples
 ./run_modelmaker.sh AM62A config_detection.yaml
 ```
+
+## Onnx Model Compilation (Open Neural Network Exchange)
+
+ONNX is open-source format for representing machine learning models, allowing them to be trained in one framework (like PyTorch or TensorFlow) and then easily used in another framework or on different hardware for inference. It acts as an intermediary, or "common language," for AI models, providing interoperability by enabling seamless model portability across various tools
+
+### Model Visualization with Neutron
+
+https://netron.app/
+https://github.com/lutzroeder/netron
+
+
+### Compilation
+
+Process onnx model into a form that the NPU can execute. In the case of TI, this generates a set of files that can be loaded on to the C7x256v Deap Learning Accelerator (DSP)
+
+
+Complete example in 
+```bash
+cd /workspaces/TI_EdgeAI
+
+./compile_onnx.sh
+```
+
+
+
+
+## See Also ...
+https://github.com/TexasInstruments-Sandbox/edgeai-osrt-libs-build
