@@ -59,10 +59,10 @@ echo "perfSimConfig = $TIDL_TOOLS_PATH/device_config.cfg" >> $OUT_DIR/config
 
 # Calibration/test - setup image.
 #see https://gist.github.com/yrevar/942d3a0ac09ec9e5eb3a to reference the category number to label, eg -> 895: 'warplane, military plane', 933 cheeseburger, 281 tabbycat
-echo "$OUT_DIR/jet.bmp 895" >> $OUT_DIR/in_data_calib.txt
+echo "$OUT_DIR/jet.jpeg 895" >> $OUT_DIR/in_data_calib.txt
 
 # and inference check again the original
-echo "$OUT_DIR/jet.jpeg 895" >> $OUT_DIR/in_data_inference.txt
+echo "$OUT_DIR/cheeseburger.jpg 895" >> $OUT_DIR/in_data_inference.txt
 
 #Or somehting different
 #echo "$OUT_DIR/cheeseburger.jpg 933" >> $OUT_DIR/in_data_inference.txt
