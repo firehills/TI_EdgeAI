@@ -21,7 +21,8 @@
             "args": [
                 "-onnx=/workspaces/TI_EdgeAI/models/resnet18_opset9.onnx",
                 "-out=/workspaces/TI_EdgeAI/out",
-                "-debug=2"
+                "-debug=2",
+                //"-inference"
             ]
         }
     ]

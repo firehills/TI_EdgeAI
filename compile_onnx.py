@@ -97,7 +97,9 @@ def CompileOnnx() -> None:
     
     #print("============================ Dump ONNX ==================================")
     #print(onnx.printer.to_text(onnx_model))
-    #print(onnx.shape_inference.infer_shapes_path(onnx_model_path, onnx_model_path))
+
+    # Use ONNX to infer shapes of tensor dimensions within the model so they are known prior to compilation. 
+    onnx.shape_inference.infer_shapes_path(model_path=onnx_model_path, output_path=onnx_model_path, strict_mode=True)
 
 
     # debug level -- use 1 or 2 for increased verbosity in the error messages. See log files to view all printed messages
@@ -169,16 +171,66 @@ def CompileOnnx() -> None:
     #    sg_rel = os.path.join('../', sg)
     #    display(md("[{}]({})".format(hl_text,sg_rel)))
 
-    print("============================ THE END ==================================")
+    # close session
+    del sess
+    print("============================ Compile Complete ==================================")
+    return
 
 
+def imagenet_class_to_name(cls):
+    # build imagenet class ID to name list dictionary
+    imagenet_dict = {}
+    with open('/opt/ti/edgeai-tidl-tools/examples/jupyter_notebooks/sample-images/imagenet-labels.txt') as f:
+        for l in f.readlines():
+            c = int(l.split(':')[0])
+            p = [name.strip() for name in l.split(':')[1].strip()[1:][:-2].split(',')]
+            imagenet_dict[c] = p
 
+    # return name list using dictionary lookup
+    return imagenet_dict[cls]
+
+
+def RunInference(image_path: str) -> None:
     print("============================ Inference =====================")
+    
+    output_dir: str = args.out
+    onnx_model_path: str = args.onnx
+    # debug level -- use 1 or 2 for increased verbosity in the error messages. See log files to view all printed messages
+    debug_level=args.debug
+
+    #compilation options - knobs to tweak 
+    num_bits = 8
+    accuracy = 1
+
+
     EP_list = ['TIDLExecutionProvider','CPUExecutionProvider']
-    sess = rt.InferenceSession(onnx_model_path ,providers=EP_list, provider_options=[compile_options, {}], sess_options=so)
-    input_details = sess.get_inputs()
-    output = list(sess.run(None, {input_details[0].name : processed_image}))[0]
-    # https://software-dl.ti.com/jacinto7/esd/tidl-tools/$REL/TIDL_TOOLS/$1/tidl_tools.tar.gz
+    session_options = rt.SessionOptions()
+    session_options.log_severity_level = 0 # = Verbose
+
+    inference_options = {
+        'tidl_tools_path' : os.environ['TIDL_TOOLS_PATH'],
+        'artifacts_folder' : output_dir,
+        'tensor_bits' : num_bits,
+        'accuracy_level' : accuracy,
+        'debug_level' : debug_level
+    }
+
+    # Setup Inference
+    sess_inf = rt.InferenceSession(onnx_model_path ,providers=EP_list, provider_options=[inference_options, {}], sess_options=session_options)
+
+    input_details = sess_inf.get_inputs()
+
+    # Run the image
+    output = list(sess_inf.run(None, {input_details[0].name : preprocess(image_path)}))
+
+    # Print top 5 classifications
+    print("########## Classification Result ##############")
+    for idx, cls in enumerate(output[0].squeeze().argsort()[-5:][::-1]):
+        print('[%d] %s' % (idx, '/'.join(imagenet_class_to_name(cls))))
+    
+    del sess_inf
+    return
+
 
 
 
@@ -190,7 +242,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(prog="OnnxCompiler",
                                     add_help=True, 
                                     description="Convert ML Onnx file to format suitable to use with Texas Instruments AM62x SoC",
-                                    epilog="")
+                                    epilog="HID Global")
     
     parser.add_argument("-onnx", 
                     default="/workspaces/TI_EdgeAI/models/resnet18_opset9.onnx", 
@@ -202,6 +254,9 @@ if __name__ == '__main__':
                     required=False, 
                     type=str,
                     help="Path to the output dir")
+    parser.add_argument("-inference",
+                    action='store_true',
+                    help="Run Inference step instead of Compile (uses compiled model from -out)")
     parser.add_argument("-debug", 
                     default=0, 
                     required=False, 
@@ -214,8 +269,16 @@ if __name__ == '__main__':
         # problem with args, argparse will flag the error -> just quit
         sys.exit(-1)
 
-    # and run the converter...
-    sys.exit(CompileOnnx()) 
+    # and run in the selected mode
+    if args.inference:
+        RunInference('/opt/ti/edgeai-tidl-tools/examples/jupyter_notebooks/sample-images/elephant.bmp')
+        RunInference('/opt/ti/edgeai-tidl-tools/examples/jupyter_notebooks/sample-images/bicycle.bmp')
+    else:
+        CompileOnnx()   
+
+    sys.exit(0)
+
+     
 
 
 
