@@ -17,11 +17,50 @@ import time
 from onnx.version_converter import convert_version
 
 
+# see /opt/ti/edgeai-tidl-tools/examples/osrt_python/advanced_examples/unit_tests_validation/ort/onnxrt_ep.py
+def get_benchmark_output(interpreter) -> tuple[int, int, int, int]:
+    '''
+    Returns benchmark data
+
+    :param interpreter: Runtime session
+    :return: Copy time
+    :return: Processing time
+    :return: Total time
+    :return: Total ddr bandwidth
+    '''
+    benchmark_dict = interpreter.get_TI_benchmark_data()
+    proc_time = copy_time = 0
+    cp_in_time = cp_out_time = 0
+    subgraphIds = []
+    for stat in benchmark_dict.keys():
+        if 'proc_start' in stat:
+            value = stat.split("ts:subgraph_")
+            value = value[1].split("_proc_start")
+            subgraphIds.append(value[0])
+    for i in range(len(subgraphIds)):
+        proc_time += benchmark_dict['ts:subgraph_'+str(subgraphIds[i])+'_proc_end'] - benchmark_dict['ts:subgraph_'+str(subgraphIds[i])+'_proc_start']
+        cp_in_time += benchmark_dict['ts:subgraph_'+str(subgraphIds[i])+'_copy_in_end'] - benchmark_dict['ts:subgraph_'+str(subgraphIds[i])+'_copy_in_start']
+        cp_out_time += benchmark_dict['ts:subgraph_'+str(subgraphIds[i])+'_copy_out_end'] - benchmark_dict['ts:subgraph_'+str(subgraphIds[i])+'_copy_out_start']
+        copy_time += cp_in_time + cp_out_time
+
+    ddr_read_total = benchmark_dict['ddr:read_end'] - benchmark_dict['ddr:read_start']
+    ddr_write_total = benchmark_dict['ddr:write_end'] - benchmark_dict['ddr:write_start']
+    ddr_bw = ddr_read_total + ddr_write_total
+
+    copy_time = copy_time if len(subgraphIds) == 1 else 0
+    totaltime = benchmark_dict['ts:run_end'] -  benchmark_dict['ts:run_start']
+    return copy_time, proc_time, totaltime, ddr_bw
+
+
+
+
 
 
 def preprocess(image_path: str):
     # read the image using openCV
     img = cv2.imread(image_path)
+    if img is None:
+        raise ValueError(f"Could not read image: {image_path}")
     
     # convert to RGB
     img = img[:,:,::-1]
@@ -84,6 +123,7 @@ def CompileOnnx() -> None:
     print(f'Output Dir = {output_dir}')
     print(f"TIDL_TOOLS_PATH={os.environ['TIDL_TOOLS_PATH']}")
     print(f"SOC={os.environ['SOC']}")
+    print("Available execution providers : ", rt.get_available_providers())
 
     # remove all "old" files in output dir
     ClearDir(output_dir)
@@ -126,6 +166,7 @@ def CompileOnnx() -> None:
         'tensor_bits' : num_bits,
         'accuracy_level' : accuracy,
         'debug_level' : debug_level,
+        'platform' : "AM62A",
         'advanced_options:calibration_frames' : len(calib_images), 
         'advanced_options:calibration_iterations' : 3, # used if accuracy_level = 1
         'advanced_options:add_data_convert_ops' : 1,
@@ -212,7 +253,8 @@ def RunInference(image_path: str) -> None:
         'artifacts_folder' : output_dir,
         'tensor_bits' : num_bits,
         'accuracy_level' : accuracy,
-        'debug_level' : debug_level
+        'debug_level' : debug_level,
+        'platform' : "AM62A"
     }
 
     # Setup Inference
@@ -228,6 +270,17 @@ def RunInference(image_path: str) -> None:
     for idx, cls in enumerate(output[0].squeeze().argsort()[-5:][::-1]):
         print('[%d] %s' % (idx, '/'.join(imagenet_class_to_name(cls))))
     
+
+    copy_time, sub_graphs_proc_time, totaltime, ddrbw = get_benchmark_output(sess_inf)
+    proc_time = totaltime - copy_time
+
+    # to ms
+    proc_time /= 1000000
+
+    # in MB
+    ddrbw /= (1024*1024)
+
+    print(f'Time : {proc_time:10.2f} ms,  DDR BW : {ddrbw} MB')
     del sess_inf
     return
 
@@ -277,11 +330,6 @@ if __name__ == '__main__':
         CompileOnnx()   
 
     sys.exit(0)
-
-     
-
-
-
 
 
     ########################################################################
