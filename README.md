@@ -16,7 +16,7 @@ cd /workspaces/TI_EdgeAI
 ./install2.sh
 
 # and activate 
-pyenv activate py31018
+pyenv activate py3.10.12
 
 ```
 
